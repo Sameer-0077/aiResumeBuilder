@@ -2,7 +2,7 @@ import React from "react";
 import html2pdf from "html2pdf.js";
 import { useLocation } from "react-router-dom";
 
-const Download = () => {
+const DownloadResume = () => {
   const location = useLocation();
   const { resumeData } = location.state || {};
 
@@ -301,4 +301,4 @@ const Download = () => {
   );
 };
 
-export default Download;
+export default DownloadResume;
