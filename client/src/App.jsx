@@ -5,8 +5,10 @@ import "./App.css";
 import Layout from "./Layout";
 import CoverLetter from "./pages/CoverLetter";
 import Dashboard from "./pages/Dashboard";
-import Download from "./pages/Download";
 import SignIn from "./pages/SignIn";
+import DownloadLayout from "./DownloadLayout";
+import DownloadResume from "./pages/DownloadResume";
+import DownloadCoverLetter from "./pages/DownloadCoverLetter";
 
 function App() {
   return (
@@ -20,7 +22,10 @@ function App() {
               <Route path="/cover-letters" element={<CoverLetter />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/download" element={<Download />} />
+              <Route path="/download" element={<DownloadLayout />}>
+                <Route path="resume" element={<DownloadResume />} />
+                <Route path="cover-letter" element={<DownloadCoverLetter />} />
+              </Route>
             </Route>
           </Routes>
         </Router>
