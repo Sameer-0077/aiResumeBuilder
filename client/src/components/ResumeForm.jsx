@@ -86,7 +86,7 @@ export default function ResumeForm() {
 
       console.log("Generated Resume --------");
       console.log(data);
-      navigate("/download", {
+      navigate("/download/resume", {
         state: { resumeData: data },
       });
     } catch (error) {
