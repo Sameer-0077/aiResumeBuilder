@@ -30,6 +30,7 @@ function StepPersonal({ data, setData }) {
       variants={fadeInLeft}
     >
       <input
+        id="full-name"
         type="text"
         placeholder="Full Name"
         value={personalInfo.name}
@@ -38,6 +39,7 @@ function StepPersonal({ data, setData }) {
       />
 
       <input
+        id="email"
         type="email"
         placeholder="Email Address"
         value={personalInfo.email}
@@ -46,6 +48,7 @@ function StepPersonal({ data, setData }) {
       />
 
       <input
+        id="phone-number"
         type="tel"
         placeholder="Phone Number"
         value={personalInfo.phone}
@@ -54,6 +57,7 @@ function StepPersonal({ data, setData }) {
       />
 
       <input
+        id="linkedin"
         type="url"
         placeholder="LinkedIn Profile URL"
         value={personalInfo.linkedin}
@@ -62,6 +66,7 @@ function StepPersonal({ data, setData }) {
       />
 
       <input
+        id="portfolio"
         type="url"
         placeholder="Portfolio / Personal Website"
         value={personalInfo.portfolio}
@@ -70,6 +75,7 @@ function StepPersonal({ data, setData }) {
       />
 
       <input
+        id="location"
         type="text"
         placeholder="Location (e.g., City, Country)"
         value={personalInfo.location}
