@@ -1,7 +1,9 @@
 import React from "react";
 import { useState } from "react";
 import html2pdf from "html2pdf.js";
-
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { fadeInUp, container } from "../Animation";
 function CoverLetter() {
   const [formData, setFormData] = useState({
     jobTitle: "",
@@ -51,8 +53,51 @@ function CoverLetter() {
       });
   };
 
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const navigate = useNavigate();
+
+  const handleGenerateWithAI = async () => {
+    if (!formData || Object.keys(formData).length === 0)
+      return alert("Error: User details are required!");
+
+    console.log("Form Submitted:", formData);
+    alert("Form submitted! Check console.");
+
+    try {
+      const res = await fetch(
+        "http://localhost:8000/api/generate-cover-letter",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) return alert(data.error);
+
+      console.log("Generated Cover Letter --------");
+      console.log(data);
+
+      navigate("/download/cover-letter", {
+        state: { coverLetterData: data },
+      });
+    } catch (error) {
+      console.log("Getting some error: ", error);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={fadeInUp}
+      className="min-h-screen bg-gray-50"
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -118,8 +163,6 @@ function CoverLetter() {
                     </label>
                     <input
                       id="companyAddress"
-                      name="companyAddress"
-                      autoComplete="company-Address"
                       className="mt-1 w-full border rounded p-2"
                       placeholder="Tech Company Inc."
                       value={formData.companyAddress}
@@ -329,10 +372,12 @@ function CoverLetter() {
                 </div>
                 <div
                   id="cv-content"
-                  className="p-6 min-h-[600px] space-y-4 text-sm text-gray-700"
+                  className="p-12 min-h-[600px] space-y-4 text-sm text-gray-700 text-left"
                 >
-                  <div className="text-right text-gray-600">
-                    <div>{formData.yourName || "[Your Name]"}</div>
+                  <div className="text-left text-gray-600">
+                    <div className=" ">
+                      {formData.yourName || "[Your Name]"}
+                    </div>
                     <div>{formData.yourEmail || "[Your Email]"}</div>
                     <div>{formData.yourPhoneNumber || "[Your Phone]"}</div>
                     <div>{formData.yourAddress || "[Your Address]"}</div>
@@ -340,12 +385,12 @@ function CoverLetter() {
                       {new Date().toLocaleDateString()}
                     </div>
                   </div>
-                  <div>
+                  <div className="text-left text-gray-600">
                     <div>{formData.hiringManager || "[HR Name]"}</div>
                     <div>{formData.companyName || "[Company Name]"}</div>
                     <div>{formData.companyAddress || "[Company Address]"}</div>
                   </div>
-                  <div className="font-semibold">
+                  <div className="font-semibold text-left">
                     Dear {formData.hiringManager || "Hiring Manager"},
                   </div>
                   <p>
@@ -430,7 +475,7 @@ function CoverLetter() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
