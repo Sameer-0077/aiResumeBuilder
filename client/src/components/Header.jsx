@@ -19,7 +19,7 @@ export default function Header() {
           </Link>
           <div className="flex items-center lg:order-2">
             <Link
-              to="/sign-in"
+              to="/signup"
               className="hidden lg:flex text-black border hover:bg-gray-100 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-sm lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none "
             >
               Sign In
@@ -164,7 +164,7 @@ export default function Header() {
         </li>
         <li>
           <Link
-            to="/#"
+            to="/signup"
             onClick={closeMenu}
             className="block sm:hidden text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-md px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none border boder-gray-400"
           >
@@ -173,7 +173,7 @@ export default function Header() {
         </li>
         <li>
           <Link
-            to="/#"
+            to="/resume-builder"
             onClick={closeMenu}
             className="block sm:hidden text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-md px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none border boder-gray-400"
           >
