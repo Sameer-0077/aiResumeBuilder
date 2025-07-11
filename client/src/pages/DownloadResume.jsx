@@ -1,10 +1,12 @@
 import React from "react";
 import html2pdf from "html2pdf.js";
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
 
 const DownloadResume = () => {
   const location = useLocation();
   const { resumeData } = location.state || {};
+  const [showResume, setShowResume] = useState(false);
 
   // const resumeData = {
   //   personal_info: {
@@ -77,7 +79,30 @@ const DownloadResume = () => {
     certifications,
   } = resumeData;
 
+  const previewAsPDF = () => {
+    setShowResume(true);
+    const element = document.getElementById("resume-content");
+    const opt = {
+      margin: 0,
+      filename: `${personal_info.name}.pdf`,
+      image: { type: "jpeg", quality: 1 },
+      html2canvas: { scale: 4, dpi: 500 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+    setTimeout(() => {
+      html2pdf()
+        .set(opt)
+        .from(element)
+        .outputPdf("bloburl")
+        .then((pdfUrl) => {
+          window.open(pdfUrl, "_blank"); // 3. Preview PDF in new tab
+          setShowResume(false); // 4. Hide the resume after preview
+        });
+    }, 100);
+  };
+
   const downloadAsPDF = () => {
+    setShowResume(true);
     const element = document.getElementById("resume-content");
     const opt = {
       margin: 0,
@@ -87,21 +112,16 @@ const DownloadResume = () => {
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
     html2pdf().set(opt).from(element).save();
-
-    // html2pdf()
-    //   .set(opt)
-    //   .from(element)
-    //   .outputPdf("bloburl") // 💡 This creates a previewable Blob URL
-    //   .then((pdfUrl) => {
-    //     window.open(pdfUrl, "_blank"); // 🔍 Opens preview in a new tab
-    //   });
+    // setShowResume(true);
   };
 
   return (
     <div className="p-4 font-[Times_New_Roman] text-left">
       <div
         id="resume-content"
-        className="bg-white text-black p-10 mx-auto shadow-lg"
+        className={`bg-white text-black p-10 mx-auto shadow-lg ${
+          showResume ? "" : "hidden"
+        }`}
         style={{
           fontFamily: '"Times New Roman", Times, serif',
           maxWidth: "800px",
@@ -289,7 +309,13 @@ const DownloadResume = () => {
       </div>
 
       {/* Download Button */}
-      <div className="text-center mt-6">
+      <div className="flex justify-center items-center mt-6 gap-8">
+        <button
+          onClick={previewAsPDF}
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+        >
+          Full Preview
+        </button>
         <button
           onClick={downloadAsPDF}
           className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"

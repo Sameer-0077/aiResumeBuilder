@@ -17,7 +17,7 @@ const generateCoverLetter = async (req, res) => {
 
          - **greetings**: Greet the hiring manager by name. Use "Dear [Hiring Manager]," format.
    
-         - **openingParagraph**: Express interest in the job. Mention the job title and company name. Reflect enthusiasm based on the provided jobDescription and whyInterested.
+         - **openingParagraph**: Express interest in the job. Mention the job title and company name. Reflect enthusiasm based on the provided jobDescription and whyInterested and most important do not include placeholder text like “[platform where job was seen]”.
          
          - **bodyParagraph1**: Describe the applicant’s work experience, tools, and technologies they have used — based on yourExperience and keySkills. Highlight specific types of work or roles they've handled.
          

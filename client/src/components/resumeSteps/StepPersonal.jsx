@@ -35,6 +35,7 @@ function StepPersonal({ data, setData }) {
         placeholder="Full Name"
         value={personalInfo.name}
         onChange={(e) => updateField("name", e.target.value)}
+        required
         className="w-full border p-2 rounded"
       />
 
@@ -44,6 +45,7 @@ function StepPersonal({ data, setData }) {
         placeholder="Email Address"
         value={personalInfo.email}
         onChange={(e) => updateField("email", e.target.value)}
+        required
         className="w-full border p-2 rounded"
       />
 
@@ -53,6 +55,7 @@ function StepPersonal({ data, setData }) {
         placeholder="Phone Number"
         value={personalInfo.phone}
         onChange={(e) => updateField("phone", e.target.value)}
+        required
         className="w-full border p-2 rounded"
       />
 
@@ -80,6 +83,7 @@ function StepPersonal({ data, setData }) {
         placeholder="Location (e.g., City, Country)"
         value={personalInfo.location}
         onChange={(e) => updateField("location", e.target.value)}
+        required
         className="w-full border p-2 rounded"
       />
     </motion.div>

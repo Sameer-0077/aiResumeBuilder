@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import html2pdf from "html2pdf.js";
 
 function DownloadCoverLetter() {
   const location = useLocation();
@@ -23,10 +24,39 @@ function DownloadCoverLetter() {
     closingParagraph,
   } = coverLetterData;
 
+  const previewAsPDF = () => {
+    const element = document.getElementById("cover-letter-content");
+    const opt = {
+      margin: 0,
+      filename: `${yourName}.pdf`,
+      image: { type: "jpeg", quality: 1 },
+      html2canvas: { scale: 2, dpi: 300 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+    html2pdf()
+      .set(opt)
+      .from(element)
+      .outputPdf("bloburl") // 💡 This creates a previewable Blob URL
+      .then((pdfUrl) => {
+        window.open(pdfUrl, "_blank"); // 🔍 Opens preview in a new tab
+      });
+  };
+  const downloadAsPDF = () => {
+    const element = document.getElementById("cover-letter-content");
+    const opt = {
+      margin: 0,
+      filename: `${yourName}.pdf`,
+      image: { type: "jpeg", quality: 1 },
+      html2canvas: { scale: 2, dpi: 300 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+    html2pdf().set(opt).from(element).save();
+  };
+
   return (
     <div>
       <div
-        id="cv-content"
+        id="cover-letter-content"
         className="p-12 min-h-[600px] space-y-4 text-sm text-gray-700 text-left"
       >
         <div className="text-left text-gray-600">
@@ -53,13 +83,13 @@ function DownloadCoverLetter() {
       </div>
       <div className="flex gap-4">
         <button
-          // onClick={previewAsPDF}
-          className="flex-1 border border-gray-300 rounded py-2 px-4 flex items-center justify-center"
+          onClick={previewAsPDF}
+          className="flex-1 border border-gray-300 hover:bg-gray-200 rounded py-2 px-4 flex items-center justify-center"
         >
           Full Preview
         </button>
         <button
-          // onClick={downloadAsPDF}
+          onClick={downloadAsPDF}
           className="flex-1 bg-indigo-600 text-white font-medium py-2 px-4 rounded hover:bg-indigo-700 flex items-center justify-center"
         >
           Download PDF
