@@ -5,10 +5,11 @@ import "./App.css";
 import Layout from "./Layout";
 import CoverLetter from "./pages/CoverLetter";
 import Dashboard from "./pages/Dashboard";
-import SignIn from "./pages/SignIn";
 import DownloadLayout from "./DownloadLayout";
 import DownloadResume from "./pages/DownloadResume";
 import DownloadCoverLetter from "./pages/DownloadCoverLetter";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -21,7 +22,8 @@ function App() {
               <Route path="/resume-builder" element={<ResumeBuilder />} />
               <Route path="/cover-letters" element={<CoverLetter />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/download" element={<DownloadLayout />}>
                 <Route path="resume" element={<DownloadResume />} />
                 <Route path="cover-letter" element={<DownloadCoverLetter />} />
