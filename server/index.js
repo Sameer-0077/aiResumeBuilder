@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const resumeRoutes = require("./routes/resumeRoutes");
-
 dotenv.config();
+const resumeRoutes = require("./routes/resumeRoutes");
+const connectDb = require("./config/db");
+connectDb();
 
 const app = express();
 app.use(cors());
