@@ -16,11 +16,23 @@ function SignUp() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // TODO: Call API to register
-    console.log("Signup Data:", formData);
-    navigate("/login"); // Redirect to login
+    try {
+      const res = await fetch("http://localhost:8000/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error);
+
+      console.log(data.status);
+      navigate("/login"); // Redirect to login
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   };
 
   return (
@@ -60,6 +72,7 @@ function SignUp() {
           placeholder="Password"
           onChange={handleChange}
           required
+          minLength={6}
           className="w-full p-3 mb-6 border rounded"
         />
 
@@ -72,10 +85,7 @@ function SignUp() {
 
         <p className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          <span
-            onClick={() => navigate("/login")}
-            className="text-green-600 hover:underline cursor-pointer"
-          >
+          <span className="text-green-600 hover:underline cursor-pointer">
             Log in
           </span>
         </p>

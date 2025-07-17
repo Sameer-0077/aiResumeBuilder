@@ -14,11 +14,25 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Call API to authenticate
-    console.log("Login Data:", formData);
-    navigate("/dashboard"); // Redirect to app
+    try {
+      const res = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) return alert(data.error);
+
+      navigate("/dashboard", {
+        state: { user: data.user },
+      });
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   };
 
   return (
