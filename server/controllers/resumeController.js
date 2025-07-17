@@ -45,7 +45,7 @@ Your task is to generate a professional, clean, ATS-friendly resume **in JSON fo
       "location": "string",
       "start_date": "string",
       "end_date": "string",
-      "responsibilities": ["enhanced list of strings based on input or generated if missing"]
+      "responsibilities ": ["enhanced list of strings based on input or generated if missing"]
     }
   ],
   "education": [
