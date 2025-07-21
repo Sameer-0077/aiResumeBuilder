@@ -4,6 +4,7 @@ import html2pdf from "html2pdf.js";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fadeInUp, container } from "../Animation";
+import LoadingScreen from "../components/LoadingScreen";
 function CoverLetter() {
   const [formData, setFormData] = useState({
     jobTitle: "",
@@ -20,6 +21,8 @@ function CoverLetter() {
     keySkills: "",
     keyAchievements: "",
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const downloadAsPDF = () => {
     const element = document.getElementById("cv-content");
@@ -62,9 +65,7 @@ function CoverLetter() {
   const handleGenerateWithAI = async () => {
     if (!formData || Object.keys(formData).length === 0)
       return alert("Error: User details are required!");
-
-    console.log("Form Submitted:", formData);
-    alert("Form submitted! Check console.");
+    setIsLoading(true);
 
     try {
       const res = await fetch(
@@ -88,6 +89,8 @@ function CoverLetter() {
       });
     } catch (error) {
       console.log("Getting some error: ", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -359,6 +362,7 @@ function CoverLetter() {
                 >
                   Generate with AI
                 </button>
+                {isLoading && <LoadingScreen />}
               </div>
             </div>
 

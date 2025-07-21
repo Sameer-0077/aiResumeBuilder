@@ -13,6 +13,7 @@ import {
   StepSkills,
   StepSummary,
 } from "./resumeSteps/index";
+import LoadingScreen from "./LoadingScreen";
 
 function StepIndicator({ steps, currentStep }) {
   return (
@@ -59,6 +60,7 @@ export default function ResumeForm() {
   ];
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const update = (fields) => setFormData((prev) => ({ ...prev, ...fields }));
 
@@ -68,8 +70,7 @@ export default function ResumeForm() {
     if (!formData || Object.keys(formData).length === 0)
       return alert("Error: User details are required!");
 
-    console.log("Form Submitted:", formData);
-    alert("Form submitted! Check console.");
+    setIsLoading(true);
     try {
       const res = await fetch("http://localhost:8000/api/generate-resume", {
         method: "POST",
@@ -91,6 +92,8 @@ export default function ResumeForm() {
       });
     } catch (error) {
       console.log("Getting some error: ", error);
+    } finally {
+      setIsLoading(false);
     }
 
     // <Link to="/resume-previewer" state={{ resume: "some resume text" }}>
@@ -153,6 +156,7 @@ export default function ResumeForm() {
           >
             {currentStep < steps.length - 1 ? "Next" : "Submit"}
           </button>
+          {isLoading && <LoadingScreen />}
         </div>
       </div>
     </motion.div>
