@@ -1,13 +1,18 @@
 const mongoose = require("mongoose");
 
-const resumeSchema = mongoose.Schema({
-  data: Object,
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+const resumeSchema = mongoose.Schema(
+  {
+    data: Object,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const Resume = mongoose.model("resume", resumeSchema);
 

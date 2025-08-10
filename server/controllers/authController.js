@@ -1,9 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const User = require("../models/user");
-
-const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
-// console.log(SALT_ROUNDS);
+const User = require("../models/userModel");
+const generateToken = require("../utils/generateToken");
 
 const userSignUp = async (req, res) => {
   try {
@@ -12,15 +10,13 @@ const userSignUp = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log("Email already in use!");
-      res.status(400).json({ error: "Email already in use" });
+      return res.status(400).json({ error: "Email already in use" });
     }
-
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
     await User.create({
       name,
       email,
-      password: hashedPassword,
+      password,
     });
     return res.status(201).json({
       status: "Signup Successful!",
@@ -45,13 +41,9 @@ const userLogin = async (req, res) => {
       return res.status(401).json({ error: "Invaild Password" });
     }
 
+    generateToken(res, user._id);
     res.status(200).json({
-      message: "Login succesful",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      user: { _id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
     res.status(400).json({
@@ -61,7 +53,27 @@ const userLogin = async (req, res) => {
   }
 };
 
+const userLogout = (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ error: "Logout failed. Please try again." });
+  }
+};
+
+const getCurrentUser = async (req, res) => {
+  res.status(200).json({ user: req.user });
+};
+
 module.exports = {
   userSignUp,
   userLogin,
+  userLogout,
+  getCurrentUser,
 };
