@@ -1,16 +1,26 @@
-const express = require("express");
-const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const resumeRoutes = require("./routes/resumeRoutes");
+const authRoutes = require("./routes/authRoutes");
 const connectDb = require("./config/db");
 connectDb();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 
-app.use("/api", resumeRoutes);
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/api/resume", resumeRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hey there!");
