@@ -14,7 +14,9 @@ function Footer() {
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-4">
           <div className="space-y-4">
-            <h3 className="text-xl font-bold">ResumeBuilder</h3>
+            <h3 className="text-xl font-bold">
+              <span className="text-blue-600">Ai</span>ResumeBuilder
+            </h3>
             <p className="text-sm text-gray-700 text-left">
               Create professional resumes and cover letters with the power of
               AI.
@@ -67,7 +69,7 @@ function Footer() {
               <li>
                 <Link
                   className="text-gray-600 hover:text-gray-700 text-sm"
-                  to="/careers"
+                  to="/"
                 >
                   Careers
                 </Link>
@@ -90,7 +92,7 @@ function Footer() {
               <li>
                 <Link
                   className="text-gray-600 hover:text-gray-700 text-sm"
-                  to="/privacy-policy"
+                  to="/"
                 >
                   Privacy Policy
                 </Link>
@@ -98,7 +100,7 @@ function Footer() {
               <li>
                 <Link
                   className="text-gray-600 hover:text-gray-700 text-sm"
-                  to="/term-conditions"
+                  to="/"
                 >
                   Terms of Service
                 </Link>

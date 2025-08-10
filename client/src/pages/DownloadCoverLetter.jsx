@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import html2pdf from "html2pdf.js";
+import useUserStore from "../store/userStore";
 
 function DownloadCoverLetter() {
   const location = useLocation();
-  const { coverLetterData } = location.state || {};
+  const { coverLetterData, newCover } = location.state || {};
+  const user = useUserStore((state) => state.user);
 
-  if (!coverLetterData) return <p>No resume data available.</p>;
+  if (!coverLetterData) return <p>No cover letter available.</p>;
 
   const {
     yourName,
@@ -36,9 +38,9 @@ function DownloadCoverLetter() {
     html2pdf()
       .set(opt)
       .from(element)
-      .outputPdf("bloburl") // 💡 This creates a previewable Blob URL
+      .outputPdf("bloburl") //  This creates a previewable Blob URL
       .then((pdfUrl) => {
-        window.open(pdfUrl, "_blank"); // 🔍 Opens preview in a new tab
+        window.open(pdfUrl, "_blank"); //  Opens preview in a new tab
       });
   };
   const downloadAsPDF = () => {
@@ -52,6 +54,35 @@ function DownloadCoverLetter() {
     };
     html2pdf().set(opt).from(element).save();
   };
+
+  const saveCoverLetter = async () => {
+    try {
+      const res = await fetch(
+        "http://localhost:8000/api/resume/save-cover-letter",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(coverLetterData),
+        }
+      );
+
+      const result = await res.json();
+      if (!res.ok) {
+        return console.log("Error: cover-letter doesn't saved", result.error);
+      }
+
+      return console.log(result.status);
+    } catch (error) {
+      console.log("Error:", error.message);
+    }
+  };
+  useEffect(() => {
+    if (newCover && !sessionStorage.getItem("coverLetterSaved") && user) {
+      saveCoverLetter();
+      sessionStorage.setItem("coverLetterSaved", "true");
+    }
+  }, [newCover]);
 
   return (
     <div>

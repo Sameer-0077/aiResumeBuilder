@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fadeInUp, fadeInLeft } from "../Animation";
+import Toast from "../components/Toast";
+import useUserStore from "../store/userStore";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,6 +12,13 @@ const Login = () => {
     password: "",
   });
 
+  const setUser = useUserStore((state) => state.setUser);
+  const location = useLocation();
+  const { toastMsg } = location.state || "";
+
+  const [msg, setMsg] = useState(toastMsg);
+  const [isError, setError] = useState(false);
+
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -17,21 +26,26 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8000/api/login", {
+      const res = await fetch("http://localhost:8000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
-      if (!res.ok) return alert(data.error);
-
-      navigate("/dashboard", {
-        state: { user: data.user },
-      });
+      // console.log(data.details);
+      if (!res.ok) {
+        setError(true);
+        return setMsg(data.error);
+      }
+      setUser(data.user);
+      navigate("/dashboard");
     } catch (error) {
-      console.log("Error: ", error);
+      console.log("Error: ", error.message);
+      setError(true);
+      setMsg(error.message);
     }
   };
 
@@ -83,6 +97,9 @@ const Login = () => {
           </span>
         </p>
       </form>
+      {msg && (
+        <Toast message={msg} onClose={() => setMsg("")} error={isError} />
+      )}
     </motion.div>
   );
 };

@@ -1,8 +1,9 @@
 import React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fadeInLeft } from "../Animation";
+import Toast from "../components/Toast";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ function SignUp() {
     password: "",
   });
 
+  const [toastMsg, setToastMsg] = useState("");
+  const [isError, setError] = useState(false);
+
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -20,18 +24,24 @@ function SignUp() {
     e.preventDefault();
     // TODO: Call API to register
     try {
-      const res = await fetch("http://localhost:8000/api/signup", {
+      const res = await fetch("http://localhost:8000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (!res.ok) return alert(data.error);
+      if (!res.ok) {
+        setError(true);
+        return setToastMsg(data.error);
+      }
 
+      setToastMsg("Signup successfull");
       console.log(data.status);
-      navigate("/login"); // Redirect to login
+      navigate("/login", { state: { toastMsg } }); // Redirect to login
     } catch (error) {
       console.log("Error: ", error);
+      setError(true);
+      setToastMsg(error.message);
     }
   };
 
@@ -85,11 +95,21 @@ function SignUp() {
 
         <p className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          <span className="text-green-600 hover:underline cursor-pointer">
+          <Link
+            to="/login"
+            className="text-green-600 hover:underline cursor-pointer"
+          >
             Log in
-          </span>
+          </Link>
         </p>
       </form>
+      {toastMsg && (
+        <Toast
+          message={toastMsg}
+          onClose={() => setToastMsg("")}
+          error={isError}
+        />
+      )}
     </motion.div>
   );
 }

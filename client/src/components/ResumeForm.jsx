@@ -72,11 +72,14 @@ export default function ResumeForm() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/generate-resume", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "http://localhost:8000/api/resume/generate-resume",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       console.log("Original Data ----");
       console.log(res);
@@ -87,18 +90,16 @@ export default function ResumeForm() {
 
       console.log("Generated Resume --------");
       console.log(data);
+      sessionStorage.removeItem("resumeSaved");
       navigate("/download/resume", {
-        state: { resumeData: data },
+        state: { resumeData: data, newResume: true },
       });
     } catch (error) {
       console.log("Getting some error: ", error);
+      alert("Server error: Failed to fetch");
     } finally {
       setIsLoading(false);
     }
-
-    // <Link to="/resume-previewer" state={{ resume: "some resume text" }}>
-    //   Go to Previewer
-    // </Link>;
   };
 
   const renderStep = () => {

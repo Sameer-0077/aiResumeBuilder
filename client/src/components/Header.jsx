@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { Link, NavLink } from "react-router-dom";
+import useUserStore from "../store/userStore";
 
 export default function Header() {
   const sideMenuRef = useRef();
@@ -10,20 +11,55 @@ export default function Header() {
     sideMenuRef.current.style.transform = "translateX(16rem)";
   };
 
+  const user = useUserStore((state) => state.user);
+  const setUser = useUserStore((state) => state.setUser);
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const result = res.json();
+
+      if (!res.ok) {
+        console.log("Error", result.error);
+      }
+
+      console.log(result.message);
+      setUser(null);
+    } catch (error) {
+      console.log("Error:", error.message);
+    }
+  };
+
   return (
     <header className="shadow sticky z-50 top-0">
       <nav className="bg-white border-gray-200 px-2 lg:px-6 py-2.5">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           <Link to="/" className="flex items-center">
-            <h2 className="text-blue-950 font-bold text-3xl ">ResumeBuilder</h2>
+            <h2 className="text-blue-950 font-bold text-3xl ">
+              <span className="text-blue-600">Ai</span>ResumeBuilder
+            </h2>
           </Link>
           <div className="flex items-center lg:order-2">
-            <Link
-              to="/signup"
-              className="hidden lg:flex text-black border hover:bg-gray-100 focus:ring-2 focus:ring-orange-300 font-medium rounded-lg text-sm lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none "
-            >
-              Sign Up
-            </Link>
+            {!user ? (
+              <Link
+                to="/signup"
+                className="hidden lg:flex text-black border hover:bg-green-500 focus:ring-2 focus:ring-orange-300 font-medium rounded-lg text-sm lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none "
+              >
+                Sign Up
+              </Link>
+            ) : (
+              <Link
+                to="/"
+                className="hidden lg:flex text-black border hover:bg-rose-400 focus:ring-2 focus:ring-orange-300 font-medium rounded-lg text-sm lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none "
+                onClick={handleLogout}
+              >
+                Logout⏻
+              </Link>
+            )}
             <Link
               to="/resume-builder"
               className="hidden lg:flex text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-orange-300 font-medium rounded-lg text-md px-1 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none"
@@ -163,13 +199,23 @@ export default function Header() {
           </NavLink>
         </li>
         <li>
-          <Link
-            to="/signup"
-            onClick={closeMenu}
-            className="block sm:hidden text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-md px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none border boder-gray-400"
-          >
-            Sign Up
-          </Link>
+          {!user ? (
+            <Link
+              to="/signup"
+              onClick={closeMenu}
+              className="block sm:hidden text-gray-900 bg-white hover:bg-green-500 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-md px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none border boder-gray-400"
+            >
+              Sign Up
+            </Link>
+          ) : (
+            <Link
+              to="/signup"
+              onClick={closeMenu}
+              className="block sm:hidden text-gray-900 bg-white hover:bg-rose-500 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-md px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none border boder-gray-400"
+            >
+              Logout⏻
+            </Link>
+          )}
         </li>
         <li>
           <Link

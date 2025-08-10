@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import html2pdf from "html2pdf.js";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 
 const DownloadResume = () => {
   const location = useLocation();
-  const { resumeData } = location.state || {};
+  const { resumeData, newResume } = location.state || {};
   const [showResume, setShowResume] = useState(false);
+
+  // console.log(location.state);
 
   if (!resumeData) return <p>No resume data available.</p>;
 
@@ -58,6 +60,38 @@ const DownloadResume = () => {
     }, 50);
     // setShowResume(true);
   };
+
+  const saveResume = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/api/resume/save-resume", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(resumeData),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        return console.log("Error: resume doesn't saved", result.error);
+      }
+
+      return console.log(result.status);
+    } catch (error) {
+      console.log("Error:", error.message);
+    }
+  };
+  useEffect(() => {
+    // console.log(
+    //   "useEffect called. newResume:",
+    //   newResume,
+    //   "resumeSaved:",
+    //   sessionStorage.getItem("resumeSaved")
+    // );
+    if (newResume && !sessionStorage.getItem("resumeSaved")) {
+      saveResume();
+      sessionStorage.setItem("resumeSaved", "true");
+    }
+  }, [newResume]);
 
   return (
     <div className="p-4 font-[Times_New_Roman] text-left">

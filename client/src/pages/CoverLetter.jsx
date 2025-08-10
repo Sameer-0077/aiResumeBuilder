@@ -69,7 +69,7 @@ function CoverLetter() {
 
     try {
       const res = await fetch(
-        "http://localhost:8000/api/generate-cover-letter",
+        "http://localhost:8000/api/resume/generate-cover-letter",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -84,11 +84,13 @@ function CoverLetter() {
       console.log("Generated Cover Letter --------");
       console.log(data);
 
+      sessionStorage.removeItem("coverLetterSaved");
       navigate("/download/cover-letter", {
-        state: { coverLetterData: data },
+        state: { coverLetterData: data, newCover: true },
       });
     } catch (error) {
-      console.log("Getting some error: ", error);
+      console.log("Getting some error: ", error.message);
+      alert("Serever erorr: Failed to fetch");
     } finally {
       setIsLoading(false);
     }
