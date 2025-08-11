@@ -26,7 +26,7 @@ function App() {
       });
       const data = await res.json();
       if (!res.ok) {
-        lreturn;
+        return console.log("Error:", data.error);
       } else {
         setUser(data.user);
         console.log(data.user);
