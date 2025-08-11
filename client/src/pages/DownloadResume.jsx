@@ -2,11 +2,13 @@ import React, { useEffect } from "react";
 import html2pdf from "html2pdf.js";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
+import useUserStore from "../store/userStore";
 
 const DownloadResume = () => {
   const location = useLocation();
   const { resumeData, newResume } = location.state || {};
   const [showResume, setShowResume] = useState(false);
+  const user = useUserStore((state) => state.user);
 
   // console.log(location.state);
 
@@ -87,7 +89,7 @@ const DownloadResume = () => {
     //   "resumeSaved:",
     //   sessionStorage.getItem("resumeSaved")
     // );
-    if (newResume && !sessionStorage.getItem("resumeSaved")) {
+    if (newResume && !sessionStorage.getItem("resumeSaved") && user) {
       saveResume();
       sessionStorage.setItem("resumeSaved", "true");
     }
