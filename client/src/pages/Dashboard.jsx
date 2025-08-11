@@ -18,6 +18,7 @@ function Dashboard() {
   //   const res = await fetch("http://localhost:8000/api/resume/");
   // };
 
+  const [hydrated, setHydrated] = useState(false);
   const [userAllResume, setUserAllResume] = useState([]);
   const [userAllCoverLetter, setUserAllCoverLetter] = useState([]);
 
@@ -62,13 +63,23 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login", { state: { toastMsg: "Please login" } });
-    }
+    setHydrated(true);
+  }, []);
 
-    allResume(user._id);
-    allCoverLetter(user._id);
-  }, [user, navigate]);
+  useEffect(() => {
+    if (hydrated) {
+      if (!user) {
+        navigate("/login", { state: { toastMsg: "Please login" } });
+      } else {
+        allResume(user._id);
+        allCoverLetter(user._id);
+      }
+    }
+  }, [hydrated, user, navigate]);
+
+  if (!hydrated) {
+    return <div className="text-center mt-20 text-lg">Loading...</div>;
+  }
 
   if (!user) return null;
 
