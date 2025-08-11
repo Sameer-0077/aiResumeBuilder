@@ -25,7 +25,7 @@ function Dashboard() {
   const allResume = async (userId) => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/resume/get-resume/${userId}`,
+        `${import.meta.env.VITE_API_GET_ALL_RESUME}/${userId}`,
         {
           method: "GET",
           credentials: "include",
@@ -45,7 +45,7 @@ function Dashboard() {
   const allCoverLetter = async (userId) => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/resume/get-cover-letter/${userId}`,
+        `${import.meta.env.VITE_API_GET_ALL_COVER_LETTER}/${userId}`,
         {
           method: "GET",
           credentials: "include",

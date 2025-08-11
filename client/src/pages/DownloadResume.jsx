@@ -65,7 +65,7 @@ const DownloadResume = () => {
 
   const saveResume = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/resume/save-resume", {
+      const res = await fetch(import.meta.env.VITE_API_SAVE_RESUME_URI, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

@@ -72,14 +72,11 @@ export default function ResumeForm() {
 
     setIsLoading(true);
     try {
-      const res = await fetch(
-        "http://localhost:8000/api/resume/generate-resume",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+      const res = await fetch(import.meta.env.VITE_API_GENERATE_RESUME_URI, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
       console.log("Original Data ----");
       console.log(res);

@@ -69,7 +69,7 @@ function CoverLetter() {
 
     try {
       const res = await fetch(
-        "http://localhost:8000/api/resume/generate-cover-letter",
+        import.meta.env.VITE_API_GENERATE_COVER_LETTER_URI,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
