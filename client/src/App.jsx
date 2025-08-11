@@ -32,7 +32,7 @@ function App() {
         console.log(data.user);
       }
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("Error fetching user:", error.message);
     }
   };
 
