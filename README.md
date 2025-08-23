@@ -3,7 +3,7 @@
 **AiResumeBuilder** is a full-stack AI-powered resume and cover letter generator that helps users create professional, personalized documents in minutes.  
 It also offers automatic summaries, project highlights, and smart suggestions using the **Gemini API**.
 
-🚀 **Live Demo:** [AiResumeBuilder](https://your-live-link.com)
+🚀 **Live Demo:** [AiResumeBuilder](https://build-ai-resume.netlify.app/)
 
 ---
 
