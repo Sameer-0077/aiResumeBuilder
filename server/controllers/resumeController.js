@@ -1,7 +1,101 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 require("dotenv").config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const API_KEY = process.env.GEMINI_API_KEY;
+const ai = new GoogleGenAI({ apiKey: API_KEY });
+
+// 1. Define the JSON schema for robust structured output
+// (OpenAPI 3.0 subset)
+const resumeSchema = {
+  type: "object",
+  properties: {
+    personal_info: {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        email: { type: "string" },
+        phone: { type: "string" },
+        linkedin: { type: "string" },
+        portfolio: { type: "string" },
+        location: { type: "string" },
+      },
+      required: ["name", "email"],
+    },
+    summary: {
+      type: "string",
+      description: "A 2-4 line professional summary.",
+    },
+    experiences: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          company: { type: "string" },
+          location: { type: "string" },
+          start_date: { type: "string" },
+          end_date: { type: "string" },
+          responsibilities: {
+            type: "array",
+            items: { type: "string" },
+            description: "List of enhanced, action-oriented bullet points.",
+          },
+        },
+      },
+    },
+    education: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          degree: { type: "string" },
+          major: { type: "string" },
+          university: { type: "string" },
+          location: { type: "string" },
+          start_year: { type: "string" },
+          end_year: { type: "string" },
+          gpa: { type: "string" },
+        },
+      },
+    },
+    skills: {
+      type: "object",
+      properties: {
+        technical: { type: "array", items: { type: "string" } },
+        soft: { type: "array", items: { type: "string" } },
+        languages: { type: "array", items: { type: "string" } },
+      },
+    },
+    projects: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          description: {
+            type: "string",
+            description: "Enhanced project description.",
+          },
+          technologies: { type: "array", items: { type: "string" } },
+          link: { type: "string" },
+        },
+      },
+    },
+    certifications: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          issuing_organization: { type: "string" },
+          date: { type: "string" },
+          link: { type: "string" },
+        },
+      },
+    },
+  },
+  required: ["personal_info", "summary", "experiences", "education", "skills"],
+};
 
 const generateResume = async (req, res) => {
   const userId = req.user?.id;
@@ -12,75 +106,19 @@ const generateResume = async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
+    // The instruction is cleaner and focuses only on content logic, as the
+    // JSON structure is handled by the schema in the config.
     const instruction = `
 You are an expert resume writer AI assistant.
 
-Your task is to generate a professional, clean, ATS-friendly resume **in JSON format** based on the user's details. Follow the format given below, and enhance fields intelligently as needed.
+Your task is to generate a professional, clean, ATS-friendly resume **strictly following the provided JSON schema** based on the user's raw details.
 
-**Guidelines**:
+**Core Directives**:
 - If a field like **summary** or **responsibilities** is missing or too brief, **generate a clear, 2–4 line version** based on the user's other inputs (like experience, education, skills).
-- If the user provides good content, use it directly.
 - If the input is vague (e.g., responsibility: "worked in frontend"), rewrite it as a strong, action-oriented statement (e.g., "Developed responsive user interfaces using React and Tailwind CSS").
-- Do not include conversational text, headers, or markdown (no \`\`\`json).
+- **CRITICAL**: The output must be **ONLY the raw JSON object**. Do not include conversational text, headers, or markdown (no \`\`\`json).
 - Use professional, clean, concise language suitable for job applications.
-- If you need to infer anything (like location or skills), do so reasonably from the context.
-
-**JSON format to follow**:
-{
-  "personal_info": {
-    "name": "string",
-    "email": "string",
-    "phone": "string",
-    "linkedin": "string",
-    "portfolio": "string",
-    "location": "string"
-  },
-  "summary": "2–4 line summary (auto-generate if empty or vague)",
-  "experiences": [
-    {
-      "title": "string",
-      "company": "string",
-      "location": "string",
-      "start_date": "string",
-      "end_date": "string",
-      "responsibilities ": ["enhanced list of strings based on input or generated if missing"]
-    }
-  ],
-  "education": [
-    {
-      "degree": "string",
-      "major": "string",
-      "university": "string",
-      "location": "string",
-      "start_year": "string",
-      "end_year": "string",
-      "gpa": "string"
-    }
-  ],
-  "skills": {
-    "technical": ["string"],
-    "soft": ["string"],
-    "languages": ["string"]
-  },
-  "projects": [
-    {
-      "name": "string",
-      "description": "enhanced or rewritten if vague",
-      "technologies": ["string"],
-      "link": "string"
-    }
-  ],
-  "certifications": [
-    {
-      "name": "string",
-      "issuing_organization": "string",
-      "date": "string",
-      "link": "string"
-    }
-  ]
-}
+- Infer missing details (like location or relevant skills) reasonably from the context.
 
 Here are the user's raw details to base your output on:
 Name: ${userDetails.personal_info?.name || ""}
@@ -143,44 +181,42 @@ ${(userDetails.certifications || [])
     (cert) => `
 - Name: ${cert.name || ""}
   Issuing Organization: ${cert.issuing_organization || ""}
-  Date: ${cert.month + "  " + cert.year || ""}
+  Date: ${cert.month + " " + cert.year || ""}
   Link: ${cert.link || ""}
 `
   )
   .join("\n")}
 `;
 
-    const result = await model.generateContent({
+    const result = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
       contents: [{ role: "user", parts: [{ text: instruction }] }],
-      generationConfig: {
+      config: {
         temperature: 0.7,
+        // ** CORRECT USAGE for Structured Output **
+        responseMimeType: "application/json",
+        responseSchema: resumeSchema,
       },
     });
 
-    const rawText = result.response.text();
+    // ** CORRECT USAGE: Access the generated text directly from the result object **
+    // The previous SDK used `result.response.text()`, the new SDK uses `result.text`.
+    const rawText = result.text;
     let generatedResumeJson;
 
     try {
-      // Try direct JSON parsing first
+      // Because we used Structured Output, this should now be reliable
       generatedResumeJson = JSON.parse(rawText);
-    } catch (err) {
-      // Fallback: extract from ```json ... ``` block
-      const match = rawText.match(/```json\s*([\s\S]*?)```/);
-      if (match && match[1]) {
-        try {
-          generatedResumeJson = JSON.parse(match[1].trim());
-        } catch (innerErr) {
-          console.error("Failed to parse JSON from markdown:", innerErr);
-          return res.status(500).json({
-            message: "AI returned invalid JSON inside markdown block.",
-          });
-        }
-      } else {
-        console.error("AI returned unrecognizable format:", rawText);
-        return res
-          .status(500)
-          .json({ message: "AI did not return valid JSON." });
-      }
+    } catch (error) {
+      console.error("Failed to parse JSON from AI response:", error);
+      console.error("Raw AI Text (Problematic):", rawText);
+
+      // If the model fails to adhere to the schema, it's a 500 error
+      // from our end since the API call succeeded but the output is unusable.
+      return res.status(500).json({
+        message:
+          "AI returned invalid JSON despite structured output request. Check logs for raw text.",
+      });
     }
 
     res.status(200).json(generatedResumeJson);
@@ -188,7 +224,10 @@ ${(userDetails.certifications || [])
     console.error("Gemini API error:", error);
     res
       .status(500)
-      .json({ message: "Failed to generate resume", error: error.message });
+      .json({
+        message: "Failed to generate resume due to API error",
+        error: error.message,
+      });
   }
 };
 
